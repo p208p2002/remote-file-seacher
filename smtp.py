@@ -38,4 +38,4 @@ send_to: list, files= None):
     smtp.sendmail(send_from, send_to, msg.as_string())
     smtp.close()
 
-send_mail('p208p2002@gmail.com','TEST2','test',['p208p2002@gmail.com'],['./test.txt'])
+#send_mail('p208p2002@gmail.com','TEST2','test',['p208p2002@gmail.com'],['./test.txt'])
