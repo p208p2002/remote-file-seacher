@@ -5,7 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from os.path import basename
 
-def send_mail(send_from: str, subject: str, text: str,
+def sendMail(send_from: str, subject: str, text: str,
 send_to: list, files= None):
 
     msg = MIMEMultipart()
@@ -38,4 +38,4 @@ send_to: list, files= None):
     smtp.sendmail(send_from, send_to, msg.as_string())
     smtp.close()
 
-#send_mail('p208p2002@gmail.com','TEST2','test',['p208p2002@gmail.com'],['./test.txt'])
+#sendMail('p208p2002@gmail.com','TEST2','test',['p208p2002@gmail.com'],['./test.txt'])
