@@ -1,9 +1,10 @@
 import socket
 import sys
 import argparse
+from socket_core import checkMsgSign,SOCKET_MSG_END
 
 host = 'localhost'
-data_payload = 2048
+data_payload = 5
 backlog = 5
 default_port = 8080
 
@@ -22,13 +23,24 @@ def echo_server(port):
     while True:
         print ("Waiting to receive message from client")
         client, address = sock.accept()
-        data = client.recv(data_payload)
-        if data:
-            print ("Data: %s" %data)
+
+        recvText = ""
+        while (not checkMsgSign(recvText,SOCKET_MSG_END)):
+            data = client.recv(data_payload)
+            recvText = recvText + data.decode()
             client.send(data)
-            print ("sent %s bytes back to %s" % (data, address))
-        # end connection
+            print(data)
+
         client.close()
+
+
+        # data = client.recv(data_payload)
+        # if data:
+        #     print ("Data: %s" %data)
+        #     client.send(data)
+        #     print ("sent %s bytes back to %s" % (data, address))
+        # # end connection
+        # client.close()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Socket Server Example')

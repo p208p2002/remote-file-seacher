@@ -1,7 +1,8 @@
 import socket
 import sys
-
+import re
 import argparse
+from socket_core import SOCKET_MSG_END,checkMsgSign,msgFilter
 
 host = 'localhost'
 default_port = 8080
@@ -12,22 +13,21 @@ def echo_client(port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # Connect the socket to the server
     server_address = (host, port)
-    print ("Connecting to %s port %s" % server_address)
     sock.connect(server_address)
 
     # Send data
     try:
         # Send data
-        message = "Test message. This will be echoed"
+        message = "Test message. This will be echoed"+SOCKET_MSG_END
         print ("Sending %s" % message)
         sock.sendall(message.encode('utf-8'))
         # Look for the response
-        amount_received = 0
-        amount_expected = len(message)
-        while amount_received < amount_expected:
-            data = sock.recv(16)
-            amount_received += len(data)
-            print ("Received: %s" % data)
+        recvText = ""
+        while (not checkMsgSign(recvText,SOCKET_MSG_END)):
+            recvText = recvText + sock.recv(5).decode()
+            print(recvText)
+        print(msgFilter(recvText,SOCKET_MSG_END))
+
     except socket.error as e:
         print ("Socket error: %s" %str(e))
     except Exception as e:
