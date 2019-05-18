@@ -8,5 +8,5 @@ def checkMsgSign(testMsg,sign=SOCKET_MSG_END):
         return False
     return True
 
-def msgFilter(socketMsg,targetStr):
+def msgFilter(socketMsg,targetStr=SOCKET_MSG_END):
     return str(socketMsg).replace(targetStr,'')

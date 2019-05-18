@@ -12,7 +12,7 @@ default_port = 8080
 def recvSockText(sock):
     recvText = ""
     while (not checkMsgSign(recvText,SOCKET_MSG_END)):
-        recvText = recvText + sock.recv(5).decode()
+        recvText = recvText + sock.recv(5).decode('utf-8')
     return (msgFilter(recvText,SOCKET_MSG_END))
 
 def echo_client(port):

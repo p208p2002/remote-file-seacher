@@ -1,7 +1,7 @@
 import socket
 import sys
 import argparse
-from socket_comm import checkMsgSign,SOCKET_MSG_END
+from socket_comm import checkMsgSign,SOCKET_MSG_END,msgFilter
 from socket_event import REQUIRE_FILE_LIST,END_CONNECT
 import time
 
@@ -12,9 +12,15 @@ default_port = 8080
 
 def parseEvent(eventName,client):
     if(eventName == REQUIRE_FILE_LIST):
-        pass
+        msg = 'send'+SOCKET_MSG_END
+        client.sendall(msg.encode('utf-8'))
     elif(eventName == END_CONNECT):
-        client.close()
+        client.sendall(SOCKET_MSG_END.encode('utf-8'))
+        return 1
+    else:
+        client.sendall(SOCKET_MSG_END.encode('utf-8'))
+
+    return 0
 
 def echo_server(port):
     """ A simple echo server """
@@ -29,24 +35,24 @@ def echo_server(port):
     # Listen to clients, backlog argument specifies the max no. of queued connections
     sock.listen(backlog)
 
-    print ("Waiting to receive message from client")
-    client, address = sock.accept()
-    recvText = ''
     while True:
-        data = client.recv(data_payload)
-        if(len(data)>0):
-            print(data)
-            recvText = recvText + data.decode()
-        if(checkMsgSign(recvText)):
-            print(recvText)
-            client.send(SOCKET_MSG_END.encode())
-            recvText = ''
+        print ("Waiting to receive message from client")
+        client, address = sock.accept()
+        recvText = ''
+        while True:
+            data = client.recv(data_payload)
+            if(len(data)>0):
+                print(data)
+                recvText = recvText + data.decode('utf-8')
+            if(checkMsgSign(recvText)): #檢測到SOCKET_MSG_END
+                print(recvText)
 
+                #分析事件並答覆Client然後清空recvText
+                event = parseEvent(msgFilter(recvText),client)
+                recvText = ''
+                if(event == 1):
+                    break
 
-
-
-
-        # client.close()
 
 
         # data = client.recv(data_payload)
