@@ -1,0 +1,2 @@
+REQUIRE_FILE_LIST =  '%__REQUIRE_FILE_LIST' #require file list
+END_CONNECT = '%__END_CONNECT'

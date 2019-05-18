@@ -1,12 +1,20 @@
 import socket
 import sys
 import argparse
-from socket_core import checkMsgSign,SOCKET_MSG_END
+from socket_comm import checkMsgSign,SOCKET_MSG_END
+from socket_event import REQUIRE_FILE_LIST,END_CONNECT
+import time
 
 host = 'localhost'
 data_payload = 5
 backlog = 5
 default_port = 8080
+
+def parseEvent(eventName,client):
+    if(eventName == REQUIRE_FILE_LIST):
+        pass
+    elif(eventName == END_CONNECT):
+        client.close()
 
 def echo_server(port):
     """ A simple echo server """
@@ -20,18 +28,25 @@ def echo_server(port):
     sock.bind(server_address)
     # Listen to clients, backlog argument specifies the max no. of queued connections
     sock.listen(backlog)
+
+    print ("Waiting to receive message from client")
+    client, address = sock.accept()
+    recvText = ''
     while True:
-        print ("Waiting to receive message from client")
-        client, address = sock.accept()
-
-        recvText = ""
-        while (not checkMsgSign(recvText,SOCKET_MSG_END)):
-            data = client.recv(data_payload)
-            recvText = recvText + data.decode()
-            client.send(data)
+        data = client.recv(data_payload)
+        if(len(data)>0):
             print(data)
+            recvText = recvText + data.decode()
+        if(checkMsgSign(recvText)):
+            print(recvText)
+            client.send(SOCKET_MSG_END.encode())
+            recvText = ''
 
-        client.close()
+
+
+
+
+        # client.close()
 
 
         # data = client.recv(data_payload)

@@ -2,10 +2,18 @@ import socket
 import sys
 import re
 import argparse
-from socket_core import SOCKET_MSG_END,checkMsgSign,msgFilter
+from socket_comm import SOCKET_MSG_END,checkMsgSign,msgFilter
+from socket_event import REQUIRE_FILE_LIST,END_CONNECT
+import time
 
 host = 'localhost'
 default_port = 8080
+
+def recvSockText(sock):
+    recvText = ""
+    while (not checkMsgSign(recvText,SOCKET_MSG_END)):
+        recvText = recvText + sock.recv(5).decode()
+    return (msgFilter(recvText,SOCKET_MSG_END))
 
 def echo_client(port):
     """ A simple echo client """
@@ -22,11 +30,23 @@ def echo_client(port):
         print ("Sending %s" % message)
         sock.sendall(message.encode('utf-8'))
         # Look for the response
-        recvText = ""
-        while (not checkMsgSign(recvText,SOCKET_MSG_END)):
-            recvText = recvText + sock.recv(5).decode()
-            print(recvText)
-        print(msgFilter(recvText,SOCKET_MSG_END))
+        recvText = recvSockText(sock)
+        print(recvText)
+        time.sleep(1)
+
+        message = REQUIRE_FILE_LIST+SOCKET_MSG_END
+        print ("Sending %s" % message)
+        sock.sendall(message.encode('utf-8'))
+        recvText = recvSockText(sock)
+        print(recvText)
+        time.sleep(1)
+
+        message = END_CONNECT+SOCKET_MSG_END
+        print ("Sending %s" % message)
+        sock.sendall(message.encode('utf-8'))
+        recvText = recvSockText(sock)
+        print(recvText)
+
 
     except socket.error as e:
         print ("Socket error: %s" %str(e))
