@@ -10,17 +10,25 @@ data_payload = 5
 backlog = 5
 default_port = 8080
 
-def parseEvent(eventName,client):
-    if(eventName == REQUIRE_FILE_LIST):
-        msg = 'send'+SOCKET_MSG_END
-        client.sendall(msg.encode('utf-8'))
-    elif(eventName == END_CONNECT):
-        client.sendall(SOCKET_MSG_END.encode('utf-8'))
-        return 1
-    else:
-        client.sendall(SOCKET_MSG_END.encode('utf-8'))
+class ClientManager(object):
+    def __init__(self,socket_client):
+        self.searchType = None
+        self.client = socket_client
 
-    return 0
+    def setSearchType(self,searchType:int):
+        self.searchType = searchType
+
+    def parseEvent(self,eventName):
+        client = self.client
+        if(eventName == REQUIRE_FILE_LIST):
+            msg = 'send'+SOCKET_MSG_END
+            client.sendall(msg.encode('utf-8'))
+        elif(eventName == END_CONNECT):
+            client.sendall(SOCKET_MSG_END.encode('utf-8'))
+            return 1
+        else:
+            client.sendall(SOCKET_MSG_END.encode('utf-8'))
+        return 0
 
 def echo_server(port):
     """ A simple echo server """
@@ -48,20 +56,11 @@ def echo_server(port):
                 print(recvText)
 
                 #分析事件並答覆Client然後清空recvText
-                event = parseEvent(msgFilter(recvText),client)
+                cManager = ClientManager(client)
+                event = cManager.parseEvent(msgFilter(recvText))
                 recvText = ''
                 if(event == 1):
                     break
-
-
-
-        # data = client.recv(data_payload)
-        # if data:
-        #     print ("Data: %s" %data)
-        #     client.send(data)
-        #     print ("sent %s bytes back to %s" % (data, address))
-        # # end connection
-        # client.close()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Socket Server Example')
