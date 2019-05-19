@@ -78,6 +78,9 @@ class ClientManager(object):
         elif(eventName == SEARCH_TARGET):
             msg = self.__searchTarget()
 
+        elif(eventName == SELECT_TARGETS):
+            pass
+
         elif(eventName == END_CONNECT):
             msg = 'bye'
             self.sendMsg(msg)
