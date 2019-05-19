@@ -6,11 +6,16 @@ from socket_comm import SOCKET_MSG_END,checkMsgSign,msgFilter
 from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE_A,SET_SEARCH_TYPE_B
 import time
 
-host = 'localhost'
-default_port = 8080
+HOST = 'localhost'
+DEFAULT_PORT = 8080
 
 class ServerManager():
-    def __init__(self,sock):
+    def __init__(self,host,port):
+        # Create a TCP/IP socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # Connect the socket to the server
+        server_address = (host, port)
+        sock.connect(server_address)
         self.sock = sock
 
     def sendMsg(self,msg=''):
@@ -18,47 +23,34 @@ class ServerManager():
         msg = msg+SOCKET_MSG_END
         msg = msg.encode('utf-8')
         sock.sendall(msg)
-
-    def recvSockText(self):
-        sock = self.sock
+        #recv text
         recvText = ""
         while (not checkMsgSign(recvText,SOCKET_MSG_END)):
             recvText = recvText + sock.recv(5).decode('utf-8')
         return (msgFilter(recvText,SOCKET_MSG_END))
 
+    def close(self):
+        message = END_CONNECT
+        return self.sendMsg(message)
 
 
-
-
-def echo_client(port):
-    """ A simple echo client """
-    # Create a TCP/IP socket
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # Connect the socket to the server
-    server_address = (host, port)
-    sock.connect(server_address)
-    sManager = ServerManager(sock)
-    # Send data
+def client(port):
     try:
+        sManager = ServerManager(HOST,port)
         # 詢問搜尋類型 1:檔案 2:資料夾
-        # searchType = input("[1]:search files  [2]:search dir  ")
-        # searchType = int(searchType)
-        # if(searchType == 1):
-        #     pass
-            # message = SET_SEARCH_TYPE_A
-        # print("What file/dir do you want to search?")
-        # print("*RegExp is also support*")
-        # print("input example:[.pdf] [.jpg] [foo.jpg] [bar]")
-        # searchStr = input()
+        searchType = input("[1]:search files  [2]:search dir  ")
+        searchType = int(searchType)
+        if(searchType == 1):
+            message = SET_SEARCH_TYPE_A
+            sManager.sendMsg(message)
+        elif(searchType == 2):
+            message = SET_SEARCH_TYPE_B
+            sManager.sendMsg(message)
 
-
-
-        message = REQUIRE_FILE_LIST
-        print ("Sending %s" % message)
-        sManager.sendMsg(message)
-        recvText = sManager.recvSockText()
-        print(recvText)
-        # time.sleep(1)
+        print("What file/dir do you want to search?")
+        print("*RegExp is also support*")
+        print("input example:[.pdf] [.jpg] [foo.jpg] [bar]")
+        searchStr = input()
 
         # message = END_CONNECT+SOCKET_MSG_END
         # print ("Sending %s" % message)
@@ -66,18 +58,17 @@ def echo_client(port):
         # recvText = recvSockText(sock)
         # print(recvText)
 
-
     except socket.error as e:
         print ("Socket error: %s" %str(e))
     except Exception as e:
         print ("Other exception: %s" %str(e))
     finally:
         print ("Closing connection to the server")
-        sock.close()
+        sManager.close()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Socket Server Example')
-    parser.add_argument('--port', action="store", dest="port", type=int, default=default_port)
+    parser.add_argument('--port', action="store", dest="port", type=int, default=DEFAULT_PORT)
     given_args = parser.parse_args()
     port = given_args.port
-    echo_client(port)
+    client(port)
