@@ -24,4 +24,4 @@ def msgFilter(socketMsg,targetStr=SOCKET_MSG_END):
     print("event:"+ event)
     print("msg:"+socketMsg)
 
-    return str(socketMsg).replace(targetStr,'')
+    return (socketMsg,event)

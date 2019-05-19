@@ -3,7 +3,7 @@ import sys
 import re
 import argparse
 from socket_comm import SOCKET_MSG_END,checkMsgSign,msgFilter
-from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE_A,SET_SEARCH_TYPE_B
+from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY
 import time
 
 HOST = 'localhost'
@@ -27,7 +27,8 @@ class ServerManager():
         recvText = ""
         while (not checkMsgSign(recvText,SOCKET_MSG_END)):
             recvText = recvText + sock.recv(5).decode('utf-8')
-        return (msgFilter(recvText,SOCKET_MSG_END))
+        recvMsg,recvEvent = msgFilter(recvText,SOCKET_MSG_END)
+        return (recvMsg)
 
     def close(self):
         message = END_CONNECT
@@ -37,26 +38,24 @@ class ServerManager():
 def client(port):
     try:
         sManager = ServerManager(HOST,port)
-        # 詢問搜尋類型 1:檔案 2:資料夾
+        # 搜尋類型 1:檔案 2:資料夾
         searchType = input("[1]:search files  [2]:search dir  ")
         searchType = int(searchType)
-        if(searchType == 1):
-            message = SET_SEARCH_TYPE_A
-            sManager.sendMsg(message)
-        elif(searchType == 2):
-            message = SET_SEARCH_TYPE_B
-            sManager.sendMsg(message)
+        if(searchType >= 1 and searchType <=2):
+            message = SET_SEARCH_TYPE
+            sManager.sendMsg(message+str(searchType))
+        else:
+            print("invaild")
+            sys.exit(0)
 
+        #搜尋條件
         print("What file/dir do you want to search?")
         print("*RegExp is also support*")
         print("input example:[.pdf] [.jpg] [foo.jpg] [bar]")
         searchStr = input()
+        message = SET_PATTERN_KEY
+        sManager.sendMsg(message+searchStr)
 
-        # message = END_CONNECT+SOCKET_MSG_END
-        # print ("Sending %s" % message)
-        # sock.sendall(message.encode('utf-8'))
-        # recvText = recvSockText(sock)
-        # print(recvText)
 
     except socket.error as e:
         print ("Socket error: %s" %str(e))

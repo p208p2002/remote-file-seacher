@@ -2,7 +2,7 @@ import socket
 import sys
 import argparse
 from socket_comm import checkMsgSign,SOCKET_MSG_END,msgFilter
-from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE_A,SET_SEARCH_TYPE_B
+from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY
 import time
 
 host = 'localhost'
@@ -13,10 +13,17 @@ default_port = 8080
 class ClientManager(object):
     def __init__(self,socket_client):
         self.searchType = None
+        self.patternKey = None
         self.client = socket_client
 
     def setSearchType(self,searchType:int):
+        print("set search type:"+str(searchType))
         self.searchType = searchType
+
+    def setPatternKey(self,key):
+        key = str(key)
+        print("set pattern key type:"+ key)
+        self.patternKey = key
 
     def sendMsg(self,msg=''):
         client = self.client
@@ -24,16 +31,16 @@ class ClientManager(object):
         msg = msg.encode('utf-8')
         client.sendall(msg)
 
-    def parseEvent(self,eventName:str):
+    def parseEvent(self,recvMsg,eventName:str):
         msg = ''
         if(eventName == REQUIRE_FILE_LIST):
             msg = 'send'+SOCKET_MSG_END
 
-        elif(eventName == SET_SEARCH_TYPE_A):
-            self.setSearchType(1)
+        elif(eventName == SET_SEARCH_TYPE):
+            self.setSearchType(int(recvMsg))
 
-        elif(eventName == SET_SEARCH_TYPE_B):
-            self.setSearchType(2)
+        elif(eventName == SET_PATTERN_KEY):
+            self.setPatternKey(str(recvMsg))
 
         elif(eventName == END_CONNECT):
             msg = 'bye'
@@ -41,7 +48,7 @@ class ClientManager(object):
             return 1
 
         else:
-            pass
+            print('Uknow event')
         #
         self.sendMsg(msg)
         return 0
@@ -70,9 +77,10 @@ def echo_server(port):
                 # print(data)
                 recvText = recvText + data.decode('utf-8')
             if(checkMsgSign(recvText)): #檢測到SOCKET_MSG_END
-                print(recvText)
+                # print(recvText)
                 #分析事件並答覆Client然後清空recvText
-                event = cManager.parseEvent(msgFilter(recvText))
+                recvMsg,recvEvent = msgFilter(recvText)
+                event = cManager.parseEvent(recvMsg,recvEvent)
                 recvText = ''
                 if(event == 1):
                     break

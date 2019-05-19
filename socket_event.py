@@ -1,4 +1,4 @@
 REQUIRE_FILE_LIST =  '%__REQUIRE_FILE_LIST%' #require file list
 END_CONNECT = '%__END_CONNECT%' #結束連線
-SET_SEARCH_TYPE_A = '%__SET_SEARCH_TYPE_A%' #搜尋檔案
-SET_SEARCH_TYPE_B = '%__SET_SEARCH_TYPE_B%' #搜尋資料夾
+SET_SEARCH_TYPE = '%__SET_SEARCH_TYPE%' #[1]搜尋檔案 [2]搜尋資料夾
+SET_PATTERN_KEY = '%__SET_PATTERN_KEY%' #搜尋條件
