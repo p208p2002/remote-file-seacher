@@ -5,8 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 from os.path import basename
 
-def sendMail(send_from: str, subject: str, text: str,
-send_to: list, files= None):
+def sendMail(send_from: str, subject: str, text: str, send_to: list, files= None):
 
     msg = MIMEMultipart()
     msg['From'] = send_from

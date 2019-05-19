@@ -62,6 +62,9 @@ def client(port):
         result = sManager.sendMsg(SEARCH_TARGET)
         print(result)
 
+        #選擇目標
+
+
 
     except socket.error as e:
         print ("Socket error: %s" %str(e))

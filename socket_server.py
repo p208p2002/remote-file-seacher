@@ -17,6 +17,7 @@ class ClientManager(object):
         self.searchType = None
         self.patternKey = None
         self.client = socket_client
+        self.files = []
 
     def setSearchType(self,searchType:int):
         print("set search type:"+str(searchType))
@@ -60,6 +61,7 @@ class ClientManager(object):
             print(counter,f)
             msg=msg+str(counter)+' '+str(f)+'\n'
             counter += 1
+        self.files = files
         return msg
 
     def parseEvent(self,recvMsg,eventName:str):
