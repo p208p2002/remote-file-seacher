@@ -18,7 +18,7 @@ class ClientManager(object):
     def setSearchType(self,searchType:int):
         self.searchType = searchType
 
-    def parseEvent(self,eventName):
+    def parseEvent(self,eventName:str):
         client = self.client
         if(eventName == REQUIRE_FILE_LIST):
             msg = 'send'+SOCKET_MSG_END
@@ -46,6 +46,7 @@ def echo_server(port):
     while True:
         print ("Waiting to receive message from client")
         client, address = sock.accept()
+        cManager = ClientManager(client)
         recvText = ''
         while True:
             data = client.recv(data_payload)
@@ -56,7 +57,6 @@ def echo_server(port):
                 print(recvText)
 
                 #分析事件並答覆Client然後清空recvText
-                cManager = ClientManager(client)
                 event = cManager.parseEvent(msgFilter(recvText))
                 recvText = ''
                 if(event == 1):
