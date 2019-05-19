@@ -2,7 +2,7 @@ import socket
 import sys
 import argparse
 from socket_comm import checkMsgSign,SOCKET_MSG_END,msgFilter
-from socket_event import REQUIRE_FILE_LIST,END_CONNECT
+from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE_A,SET_SEARCH_TYPE_B
 import time
 
 host = 'localhost'
@@ -18,16 +18,32 @@ class ClientManager(object):
     def setSearchType(self,searchType:int):
         self.searchType = searchType
 
-    def parseEvent(self,eventName:str):
+    def sendMsg(self,msg=''):
         client = self.client
+        msg = msg + SOCKET_MSG_END
+        msg = msg.encode('utf-8')
+        client.sendall(msg)
+
+    def parseEvent(self,eventName:str):
+        msg = ''
         if(eventName == REQUIRE_FILE_LIST):
             msg = 'send'+SOCKET_MSG_END
-            client.sendall(msg.encode('utf-8'))
+
+        elif(eventName == SET_SEARCH_TYPE_A):
+            self.setSearchType(1)
+
+        elif(eventName == SET_SEARCH_TYPE_B):
+            self.setSearchType(2)
+
         elif(eventName == END_CONNECT):
-            client.sendall(SOCKET_MSG_END.encode('utf-8'))
+            msg = 'bye'
+            self.sendMsg(msg)
             return 1
+
         else:
-            client.sendall(SOCKET_MSG_END.encode('utf-8'))
+            pass
+        #
+        self.sendMsg(msg)
         return 0
 
 def echo_server(port):
@@ -51,11 +67,10 @@ def echo_server(port):
         while True:
             data = client.recv(data_payload)
             if(len(data)>0):
-                print(data)
+                # print(data)
                 recvText = recvText + data.decode('utf-8')
             if(checkMsgSign(recvText)): #檢測到SOCKET_MSG_END
                 print(recvText)
-
                 #分析事件並答覆Client然後清空recvText
                 event = cManager.parseEvent(msgFilter(recvText))
                 recvText = ''

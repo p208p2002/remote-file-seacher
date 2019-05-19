@@ -32,14 +32,16 @@ def echo_client(port):
         # Look for the response
         recvText = recvSockText(sock)
         print(recvText)
-        time.sleep(1)
+        # time.sleep(1)
+
+
 
         message = REQUIRE_FILE_LIST+SOCKET_MSG_END
         print ("Sending %s" % message)
         sock.sendall(message.encode('utf-8'))
         recvText = recvSockText(sock)
         print(recvText)
-        time.sleep(1)
+        # time.sleep(1)
 
         message = END_CONNECT+SOCKET_MSG_END
         print ("Sending %s" % message)
