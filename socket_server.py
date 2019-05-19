@@ -2,8 +2,10 @@ import socket
 import sys
 import argparse
 from socket_comm import checkMsgSign,SOCKET_MSG_END,msgFilter
-from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY
+from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY,SEARCH_TARGET
 import time
+import os
+import re
 
 host = 'localhost'
 data_payload = 5
@@ -31,6 +33,35 @@ class ClientManager(object):
         msg = msg.encode('utf-8')
         client.sendall(msg)
 
+    def __searchTarget(self):
+        path = 'd:\\111\\'
+        files = []
+        searchType = self.searchType
+        searchStr = self.patternKey
+        # r=root, d=directories, f = files
+        for r, d, f in os.walk(path):
+            searchTarget = 0
+            if(searchType == 1):
+                searchTarget = f
+            elif(searchType == 2):
+                searchTarget = d
+
+            for target in searchTarget:
+                patternStr = re.compile(searchStr)
+                results = patternStr.findall(target)
+                if(len(results)>0):
+                    files.append(os.path.join(r, target))
+        counter = 0
+        if(len(files)==0):
+            print("no match result")
+            sys.exit(0)
+        msg = ''
+        for f in files:
+            print(counter,f)
+            msg=msg+str(counter)+' '+str(f)+'\n'
+            counter += 1
+        return msg
+
     def parseEvent(self,recvMsg,eventName:str):
         msg = ''
         if(eventName == REQUIRE_FILE_LIST):
@@ -41,6 +72,9 @@ class ClientManager(object):
 
         elif(eventName == SET_PATTERN_KEY):
             self.setPatternKey(str(recvMsg))
+
+        elif(eventName == SEARCH_TARGET):
+            msg = self.__searchTarget()
 
         elif(eventName == END_CONNECT):
             msg = 'bye'

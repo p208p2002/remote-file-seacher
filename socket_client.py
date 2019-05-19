@@ -3,7 +3,7 @@ import sys
 import re
 import argparse
 from socket_comm import SOCKET_MSG_END,checkMsgSign,msgFilter
-from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY
+from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY,SEARCH_TARGET
 import time
 
 HOST = 'localhost'
@@ -21,13 +21,14 @@ class ServerManager():
     def sendMsg(self,msg=''):
         sock = self.sock
         msg = msg+SOCKET_MSG_END
+        print('send:'+ msg)
         msg = msg.encode('utf-8')
         sock.sendall(msg)
         #recv text
         recvText = ""
         while (not checkMsgSign(recvText,SOCKET_MSG_END)):
             recvText = recvText + sock.recv(5).decode('utf-8')
-        recvMsg,recvEvent = msgFilter(recvText,SOCKET_MSG_END)
+        recvMsg,recvEvent = msgFilter(recvText,SOCKET_MSG_END,False)
         return (recvMsg)
 
     def close(self):
@@ -55,6 +56,11 @@ def client(port):
         searchStr = input()
         message = SET_PATTERN_KEY
         sManager.sendMsg(message+searchStr)
+
+        #搜尋目標
+        print("Start searching...")
+        result = sManager.sendMsg(SEARCH_TARGET)
+        print(result)
 
 
     except socket.error as e:
