@@ -3,7 +3,7 @@ import sys
 import re
 import argparse
 from socket_comm import SOCKET_MSG_END,checkMsgSign,msgFilter
-from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY,SEARCH_TARGET
+from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY,SEARCH_TARGET,SELECT_TARGETS
 import time
 
 HOST = 'localhost'
@@ -21,7 +21,7 @@ class ServerManager():
     def sendMsg(self,msg=''):
         sock = self.sock
         msg = msg+SOCKET_MSG_END
-        print('send:'+ msg)
+        # print('send:'+ msg)
         msg = msg.encode('utf-8')
         sock.sendall(msg)
         #recv text
@@ -63,6 +63,12 @@ def client(port):
         print(result)
 
         #選擇目標
+        if(searchType == 1):
+            print("*use space to split muilt-target*")
+            selectTargets = input("Choose what you want to upload: ")
+            # selectTargets = selectTargets.split()
+            print("Picked:"+str(selectTargets))
+            sManager.sendMsg(SELECT_TARGETS+str(selectTargets))
 
 
 

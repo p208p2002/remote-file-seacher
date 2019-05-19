@@ -2,7 +2,7 @@ import socket
 import sys
 import argparse
 from socket_comm import checkMsgSign,SOCKET_MSG_END,msgFilter
-from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY,SEARCH_TARGET
+from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY,SEARCH_TARGET,SELECT_TARGETS
 import time
 import os
 import re
@@ -59,7 +59,7 @@ class ClientManager(object):
         msg = ''
         for f in files:
             print(counter,f)
-            msg=msg+str(counter)+' '+str(f)+'\n'
+            msg=msg+'['+str(counter)+'] '+str(f)+'\n'
             counter += 1
         self.files = files
         return msg
@@ -84,7 +84,8 @@ class ClientManager(object):
             return 1
 
         else:
-            print('Uknow event')
+            print('Uknow event:'+eventName)
+            print('msg:'+recvMsg+'\n')
         #
         self.sendMsg(msg)
         return 0
