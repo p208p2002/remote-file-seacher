@@ -27,7 +27,7 @@ class ServerManager():
         #recv text
         recvText = ""
         while (not checkMsgSign(recvText,SOCKET_MSG_END)):
-            recvText = recvText + sock.recv(5).decode('utf-8')
+            recvText = recvText + sock.recv(5).decode('utf-8','ignore')
         recvMsg,recvEvent = msgFilter(recvText,SOCKET_MSG_END,False)
         return (recvMsg)
 
@@ -65,12 +65,11 @@ def client(port):
         #選擇目標
         if(searchType == 1):
             print("*use space to split muilt-target*")
-            selectTargets = input("Choose what you want to upload: ")
-            # selectTargets = selectTargets.split()
-            print("Picked:"+str(selectTargets))
-            sManager.sendMsg(SELECT_TARGETS+str(selectTargets))
-
-
+        elif(searchType == 2):
+            pass
+        selectTargets = input("Choose what you want to upload: ")
+        print("Picked:"+str(selectTargets))
+        sManager.sendMsg(SELECT_TARGETS+str(selectTargets))
 
     except socket.error as e:
         print ("Socket error: %s" %str(e))

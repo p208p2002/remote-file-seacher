@@ -19,6 +19,8 @@ class ClientManager(object):
         self.patternKey = None
         self.client = socket_client
         self.files = []
+        self.uploadZipPath = None
+        self.uploadZipName = None
 
     def setSearchType(self,searchType:int):
         print("set search type:"+str(searchType))
@@ -36,7 +38,7 @@ class ClientManager(object):
         client.sendall(msg)
 
     def __searchTarget(self):
-        path = 'd:\\111\\'
+        path = 'C:\\Users\\Philip\\Pictures'
         files = []
         searchType = self.searchType
         searchStr = self.patternKey
@@ -56,7 +58,7 @@ class ClientManager(object):
         counter = 0
         if(len(files)==0):
             print("no match result")
-            sys.exit(0)
+            return 1
         msg = ''
         for f in files:
             print(counter,f)
@@ -65,8 +67,8 @@ class ClientManager(object):
         self.files = files
         return msg
 
-    def __zipFiles(self,targets):
-        selectTargets = targets
+    def __zipFiles(self,target_indexs):
+        selectTargets = target_indexs
         files = self.files
         print("Select:")
         zipPaths = []
@@ -74,8 +76,16 @@ class ClientManager(object):
             target = int(target)
             zipPaths.append(files[target])
             print(files[target])
-        zipPath,zipName = zipFiles(zipPaths)
+            zipPath,zipName = zipFiles(zipPaths)
+        return (zipPath,zipName)
 
+    def __zipDir(self,target_index):
+        selectTargets = int(target_index)
+        files = self.files
+        print("Target dir:")
+        print(files[selectTargets])
+        zipPath,zipName = zipDir(files[selectTargets])
+        return (zipPath,zipName)
 
     def parseEvent(self,recvMsg,eventName:str):
         msg = ''
@@ -90,12 +100,23 @@ class ClientManager(object):
 
         elif(eventName == SEARCH_TARGET):
             msg = self.__searchTarget()
+            if(msg == 1): #no match result
+                return 1
 
         elif(eventName == SELECT_TARGETS):
+            zipPath = None
+            zipName = None
             if(self.searchType == 1):
-                self.__zipFiles(recvMsg.split())
+                zipPath,zipName = self.__zipFiles(recvMsg.split())
             elif(self.searchType == 2):
-                pass
+                zipPath,zipName = self.__zipDir(int(recvMsg))
+            else:
+                print('invaild search type')
+                return 1
+            self.uploadZipPath = zipPath
+            self.uploadZipName = zipName
+            print(self.uploadZipName,self.uploadZipPath)
+
         elif(eventName == END_CONNECT):
             msg = 'bye'
             self.sendMsg(msg)
@@ -130,7 +151,7 @@ def echo_server(port):
             data = client.recv(data_payload)
             if(len(data)>0):
                 # print(data)
-                recvText = recvText + data.decode('utf-8')
+                recvText = recvText + data.decode('utf-8','ignore')
             if(checkMsgSign(recvText)): #檢測到SOCKET_MSG_END
                 # print(recvText)
                 #分析事件並答覆Client然後清空recvText
