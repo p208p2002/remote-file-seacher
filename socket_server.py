@@ -6,6 +6,7 @@ from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTE
 import time
 import os
 import re
+from zip import zipDir,zipFiles
 
 host = 'localhost'
 data_payload = 5
@@ -64,6 +65,18 @@ class ClientManager(object):
         self.files = files
         return msg
 
+    def __zipFiles(self,targets):
+        selectTargets = targets
+        files = self.files
+        print("Select:")
+        zipPaths = []
+        for target in selectTargets:
+            target = int(target)
+            zipPaths.append(files[target])
+            print(files[target])
+        zipPath,zipName = zipFiles(zipPaths)
+
+
     def parseEvent(self,recvMsg,eventName:str):
         msg = ''
         if(eventName == REQUIRE_FILE_LIST):
@@ -79,8 +92,10 @@ class ClientManager(object):
             msg = self.__searchTarget()
 
         elif(eventName == SELECT_TARGETS):
-            pass
-
+            if(self.searchType == 1):
+                self.__zipFiles(recvMsg.split())
+            elif(self.searchType == 2):
+                pass
         elif(eventName == END_CONNECT):
             msg = 'bye'
             self.sendMsg(msg)
