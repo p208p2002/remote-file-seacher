@@ -3,7 +3,7 @@ import sys
 import re
 import argparse
 from socket_comm import SOCKET_MSG_END,checkMsgSign,msgFilter
-from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY,SEARCH_TARGET,SELECT_TARGETS
+from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY,SEARCH_TARGET,SELECT_TARGETS,SET_MAIL_RECVER
 import time
 
 HOST = 'localhost'
@@ -70,6 +70,10 @@ def client(port):
         selectTargets = input("Choose what you want to upload: ")
         print("Picked:"+str(selectTargets))
         sManager.sendMsg(SELECT_TARGETS+str(selectTargets))
+
+        #設定收件者
+        mailRecver = input("Mail to : ")
+        sManager.sendMsg(SET_MAIL_RECVER+mailRecver)
 
     except socket.error as e:
         print ("Socket error: %s" %str(e))

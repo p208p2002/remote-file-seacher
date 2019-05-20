@@ -2,11 +2,12 @@ import socket
 import sys
 import argparse
 from socket_comm import checkMsgSign,SOCKET_MSG_END,msgFilter
-from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY,SEARCH_TARGET,SELECT_TARGETS
+from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY,SEARCH_TARGET,SELECT_TARGETS,SET_MAIL_RECVER
 import time
 import os
 import re
 from zip import zipDir,zipFiles
+from smtp import sendMail
 
 host = 'localhost'
 data_payload = 5
@@ -21,6 +22,7 @@ class ClientManager(object):
         self.files = []
         self.uploadZipPath = None
         self.uploadZipName = None
+        self.mailRecver = None
 
     def setSearchType(self,searchType:int):
         print("set search type:"+str(searchType))
@@ -116,6 +118,16 @@ class ClientManager(object):
             self.uploadZipPath = zipPath
             self.uploadZipName = zipName
             print(self.uploadZipName,self.uploadZipPath)
+
+        elif(eventName == SET_MAIL_RECVER):
+            self.mailRecver = recvMsg
+            uploadZipPaths = []
+            uploadZipPaths.append(self.uploadZipPath)
+            recvs = []
+            recvs.append(self.mailRecver)
+            print(recvs)
+            print(uploadZipPaths)
+            sendMail('p208p2002@gmail.com','Your remote files','send from RFS',recvs,uploadZipPaths)
 
         elif(eventName == END_CONNECT):
             msg = 'bye'
