@@ -2,7 +2,7 @@ import socket
 import sys
 import argparse
 from socket_comm import checkMsgSign,SOCKET_MSG_END,msgFilter
-from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY,SEARCH_TARGET,SELECT_TARGETS,SET_MAIL_RECVER
+from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY,SEARCH_TARGET,SELECT_TARGETS,SET_MAIL_RECVER,SET_SEARCH_ROOT_PATH
 import time
 import os
 import re
@@ -23,6 +23,11 @@ class ClientManager(object):
         self.uploadZipPath = None
         self.uploadZipName = None
         self.mailRecver = None
+        self.searchPath = None
+
+    def setSearchPath(self,path):
+        print("set search path:"+str(path))
+        self.searchPath = path
 
     def setSearchType(self,searchType:int):
         print("set search type:"+str(searchType))
@@ -40,7 +45,7 @@ class ClientManager(object):
         client.sendall(msg)
 
     def __searchTarget(self):
-        path = 'D:\\Project_BoxWorld'
+        path = self.searchPath
         files = []
         searchType = self.searchType
         searchStr = self.patternKey
@@ -96,6 +101,9 @@ class ClientManager(object):
 
         elif(eventName == SET_SEARCH_TYPE):
             self.setSearchType(int(recvMsg))
+
+        elif(eventName == SET_SEARCH_ROOT_PATH):
+            self.setSearchPath(str(recvMsg))
 
         elif(eventName == SET_PATTERN_KEY):
             self.setPatternKey(str(recvMsg))

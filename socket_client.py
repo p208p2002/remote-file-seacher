@@ -3,7 +3,7 @@ import sys
 import re
 import argparse
 from socket_comm import SOCKET_MSG_END,checkMsgSign,msgFilter
-from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY,SEARCH_TARGET,SELECT_TARGETS,SET_MAIL_RECVER
+from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY,SEARCH_TARGET,SELECT_TARGETS,SET_MAIL_RECVER,SET_SEARCH_ROOT_PATH
 import time
 
 HOST = 'localhost'
@@ -33,8 +33,8 @@ class ServerManager():
         return (recvMsg)
 
     def close(self):
-        # message = END_CONNECT
-        # self.sendMsg(message)
+        message = END_CONNECT
+        self.sendMsg(message)
         self.sock.close()
 
 
@@ -50,6 +50,12 @@ def client(port):
         else:
             print("invaild")
             sys.exit(0)
+
+        print("Search root path?")
+        print("input example:[d:\] [d:\\foo\\bar]")
+        searchPath = input("")
+        message = SET_SEARCH_ROOT_PATH
+        sManager.sendMsg(message+searchPath)
 
         #搜尋條件
         print("What file/dir do you want to search?")
