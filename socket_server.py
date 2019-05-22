@@ -40,7 +40,7 @@ class ClientManager(object):
         client.sendall(msg)
 
     def __searchTarget(self):
-        path = 'C:\\Users\\Philip\\Pictures'
+        path = 'd:\\'
         files = []
         searchType = self.searchType
         searchStr = self.patternKey
@@ -158,18 +158,19 @@ def echo_server(port):
         print ("Waiting to receive message from client")
         client, address = sock.accept()
         cManager = ClientManager(client)
-        recvText = ''
+        recvText = ''.encode('utf-8')
         while True:
             data = client.recv(data_payload)
             if(len(data)>0):
                 # print(data)
-                recvText = recvText + data.decode('utf-8','ignore')
+                recvText = recvText + data
             if(checkMsgSign(recvText)): #檢測到SOCKET_MSG_END
                 # print(recvText)
                 #分析事件並答覆Client然後清空recvText
+                recvText = recvText.decode('utf-8')
                 recvMsg,recvEvent = msgFilter(recvText)
                 event = cManager.parseEvent(recvMsg,recvEvent)
-                recvText = ''
+                recvText = ''.encode('utf-8')
                 if(event == 1):
                     break
 
