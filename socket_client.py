@@ -9,9 +9,10 @@ import signal
 
 HOST = 'localhost'
 DEFAULT_PORT = 8080
+BUFF_SIZE = 1024
 
 def interruptHandler(sig, frame):
-        sys.exit(0)
+    sys.exit(0)
 
 class ServerManager():
     def __init__(self,host,port):
@@ -31,7 +32,7 @@ class ServerManager():
         #recv text
         recvText = "".encode('utf-8')
         while (not checkMsgSign(recvText,SOCKET_MSG_END)):
-            recvText = recvText + sock.recv(5)
+            recvText = recvText + sock.recv(BUFF_SIZE)
         recvText = recvText.decode('utf-8')
         recvMsg,recvEvent = msgFilter(recvText,SOCKET_MSG_END,False)
         return (recvMsg)
@@ -45,6 +46,14 @@ class ServerManager():
 def client(port):
     try:
         sManager = ServerManager(HOST,port)
+
+        # 搜尋根目錄
+        print("Search root path?")
+        print("input example:[d:\] [d:\\foo\\bar\\]")
+        searchPath = input("")
+        message = SET_SEARCH_ROOT_PATH
+        sManager.sendMsg(message+searchPath)
+
         # 搜尋類型 1:檔案 2:資料夾
         searchType = input("[1]:search files  [2]:search dir  ")
         searchType = int(searchType)
@@ -54,12 +63,6 @@ def client(port):
         else:
             print("invaild")
             sys.exit(0)
-
-        print("Search root path?")
-        print("input example:[d:\] [d:\\foo\\bar]")
-        searchPath = input("")
-        message = SET_SEARCH_ROOT_PATH
-        sManager.sendMsg(message+searchPath)
 
         #搜尋條件
         print("What file/dir do you want to search?")

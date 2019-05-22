@@ -3,15 +3,14 @@ import sys
 import argparse
 from socket_comm import checkMsgSign,SOCKET_MSG_END,msgFilter
 from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY,SEARCH_TARGET,SELECT_TARGETS,SET_MAIL_RECVER,SET_SEARCH_ROOT_PATH
-import time
 import os
 import re
 from zip import zipDir,zipFiles
 from smtp import sendMail
 
 host = 'localhost'
-data_payload = 5
-backlog = 5
+data_payload = 1024
+backlog = 1
 default_port = 8080
 
 class ClientManager(object):
