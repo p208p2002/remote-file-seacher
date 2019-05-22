@@ -5,9 +5,13 @@ import argparse
 from socket_comm import SOCKET_MSG_END,checkMsgSign,msgFilter
 from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTERN_KEY,SEARCH_TARGET,SELECT_TARGETS,SET_MAIL_RECVER,SET_SEARCH_ROOT_PATH
 import time
+import signal
 
 HOST = 'localhost'
 DEFAULT_PORT = 8080
+
+def interruptHandler(sig, frame):
+        sys.exit(0)
 
 class ServerManager():
     def __init__(self,host,port):
@@ -99,6 +103,7 @@ def client(port):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Socket Server Example')
     parser.add_argument('--port', action="store", dest="port", type=int, default=DEFAULT_PORT)
+    signal.signal(signal.SIGINT, interruptHandler)
     given_args = parser.parse_args()
     port = given_args.port
     client(port)

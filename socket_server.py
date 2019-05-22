@@ -65,7 +65,7 @@ class ClientManager(object):
         counter = 0
         if(len(files)==0):
             print("no match result")
-            return 1
+            return ''
         msg = ''
         for f in files:
             print(counter,f)
@@ -166,6 +166,7 @@ def echo_server(port):
     while True:
         print ("Waiting to receive message from client")
         client, address = sock.accept()
+        print("Client connect")
         cManager = ClientManager(client)
         recvText = ''.encode('utf-8')
         while True:
