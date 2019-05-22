@@ -149,7 +149,7 @@ class ClientManager(object):
         self.sendMsg(msg)
         return 0
 
-def echo_server(port):
+def socket_server(port):
     """ A simple echo server """
     # Create a TCP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -188,4 +188,4 @@ if __name__ == '__main__':
     parser.add_argument('--port', action="store", dest="port", type=int, default=default_port)
     given_args = parser.parse_args()
     port = given_args.port
-    echo_server(port)
+    socket_server(port)
