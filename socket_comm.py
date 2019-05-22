@@ -8,7 +8,7 @@ def checkMsgSign(testMsg,sign=SOCKET_MSG_END):
         return False
     return True
 
-def msgFilter(socketMsg,targetStr=SOCKET_MSG_END,printInfo=True):
+def msgFilter(socketMsg="",targetStr=SOCKET_MSG_END,printInfo=True):
     socketMsg = str(socketMsg)
     event = re.compile("%__[A-Z|_]*%")
     event = event.findall(socketMsg)
