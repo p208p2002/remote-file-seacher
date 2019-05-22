@@ -3,7 +3,7 @@
 - mail the file to you
 
 # Use
-- `cp example_setting.yml .yml` or `copy example_setting.yml .yml`
+- run `cp example_setting.yml .yml` or `copy example_setting.yml .yml` to make setting file
 - then edit `.yml` file
 > if you are using gmail, please enable the sending permission
 - run `python socket_server.py` as your server
