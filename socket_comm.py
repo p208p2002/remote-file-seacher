@@ -2,7 +2,9 @@ import re
 
 SOCKET_MSG_END = "$__MSG_END"
 
-def checkMsgSign(testMsg,sign=SOCKET_MSG_END):
+def checkMsgSign(testMsg="",sign=SOCKET_MSG_END):
+    if(isinstance(testMsg,str)==False):
+        testMsg = testMsg.decode('utf-8','ignore')
     patternStr = re.compile("\\"+sign+"$")
     if(len(patternStr.findall(testMsg))<=0):
         return False
