@@ -40,7 +40,7 @@ class ClientManager(object):
         client.sendall(msg)
 
     def __searchTarget(self):
-        path = 'd:\\'
+        path = 'D:\\Project_BoxWorld'
         files = []
         searchType = self.searchType
         searchStr = self.patternKey
@@ -102,7 +102,8 @@ class ClientManager(object):
 
         elif(eventName == SEARCH_TARGET):
             msg = self.__searchTarget()
-            if(msg == 1): #no match result
+            if(msg == 1): #no match
+                self.sendMsg()
                 return 1
 
         elif(eventName == SELECT_TARGETS):

@@ -33,8 +33,9 @@ class ServerManager():
         return (recvMsg)
 
     def close(self):
-        message = END_CONNECT
-        return self.sendMsg(message)
+        # message = END_CONNECT
+        # self.sendMsg(message)
+        self.sock.close()
 
 
 def client(port):
@@ -61,6 +62,9 @@ def client(port):
         #搜尋目標
         print("Start searching...")
         result = sManager.sendMsg(SEARCH_TARGET)
+        if(len(result)==0):
+            print('no match result')
+            raise Exception()
         print(result)
 
         #選擇目標
@@ -79,10 +83,12 @@ def client(port):
     except socket.error as e:
         print ("Socket error: %s" %str(e))
     except Exception as e:
-        print ("Other exception: %s" %str(e))
+        pass
+        # print ("Other exception: %s" %str(e))
     finally:
         print ("Closing connection to the server")
         sManager.close()
+        return 0
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Socket Server Example')
