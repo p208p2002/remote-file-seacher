@@ -27,8 +27,7 @@ class ServerManager():
         #recv text
         recvText = "".encode('utf-8')
         while (not checkMsgSign(recvText,SOCKET_MSG_END)):
-            recv = sock.recv(5)
-            recvText = recvText + recv
+            recvText = recvText + sock.recv(5)
         recvText = recvText.decode('utf-8')
         recvMsg,recvEvent = msgFilter(recvText,SOCKET_MSG_END,False)
         return (recvMsg)
