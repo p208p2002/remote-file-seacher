@@ -8,7 +8,7 @@ import re
 from zip import zipDir,zipFiles
 from smtp import sendMail
 
-host = 'localhost'
+host = ''
 data_payload = 1024
 backlog = 1
 default_port = 8080

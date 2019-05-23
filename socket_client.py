@@ -7,7 +7,7 @@ from socket_event import REQUIRE_FILE_LIST,END_CONNECT,SET_SEARCH_TYPE,SET_PATTE
 import time
 import signal
 
-HOST = 'localhost'
+DEFAULT_HOST = 'localhost'
 DEFAULT_PORT = 8080
 BUFF_SIZE = 1024
 
@@ -43,9 +43,9 @@ class ServerManager():
         self.sock.close()
 
 
-def client(port):
+def client(host,port):
     try:
-        sManager = ServerManager(HOST,port)
+        sManager = ServerManager(host,port)
 
         # 搜尋根目錄
         print("Search root path?")
@@ -106,7 +106,9 @@ def client(port):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Socket Server Example')
     parser.add_argument('--port', action="store", dest="port", type=int, default=DEFAULT_PORT)
+    parser.add_argument('--host', action="store", dest="host", type=str, default=DEFAULT_HOST)
     signal.signal(signal.SIGINT, interruptHandler)
     given_args = parser.parse_args()
     port = given_args.port
-    client(port)
+    host = given_args.host
+    client(host,port)
