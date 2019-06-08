@@ -2,7 +2,7 @@
 - search file on remote computer
 - mail the file to you
 
-# Use
+# Usage
 - run `cp example_setting.yml .yml` or `copy example_setting.yml .yml` to make setting file
 - then edit `.yml` file
 > if you are using gmail, please enable the sending permission
